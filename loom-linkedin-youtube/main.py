@@ -1,41 +1,42 @@
-from linkedin import linkedin
+# from linkedin import linkedin
 import os
+from requests_oauthlib import OAuth2Session
 from dotenv import load_dotenv
 import requests
+import string
+import random
 
 load_dotenv()
 
-APPLICATON_KEY = os.getenv('CLIENT_ID')
-APPLICATON_SECRET = os.getenv('CLIENT_SECRET')
+REDIRECT_URI = 'http://localhost:8000'
+REDIRECT_URI_ENCODED = 'http%3A%2F%2Flocalhost%3A8000'
+CLIENT_ID = os.getenv('CLIENT_ID')
+CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 
-url = 'https://www.linkedin.com/oauth/v2/accessToken'
-params = {
-    'grant_type': 'authorization_code',
-    'code': 'your_authorization_code',
-    'redirect_uri': 'https://yourwebsite.com/callback',
-    'client_id': 'your_client_id',
-    'client_secret': 'your_client_secret'
-}
-response = requests.post(url, data=params)
+# Generate a random string to protect against cross-site request forgery
+letters = string.ascii_lowercase
+CSRF_TOKEN = ''.join(random.choice(letters) for i in range(24))
 
-if response.status_code == 200:
-    access_token = response.json()['access_token']
-    print('Access token:', access_token)
-else:
-    print('Error:', response.status_code, response.text)
+AUTH_CODE =''
+ACCESS_TOKEN_URL = 'https://www.linkedin.com/oauth/v2/accessToken'
 
+# auth_params = {'response_type': 'code',
+#                'client_id': CLIENT_ID,
+#                'redirect_uri': REDIRECT_URI_ENCODED,
+#                'state': CSRF_TOKEN,
+#                'scope': ['w_member_social']} #r_liteprofile,r_emailaddress,
 
 
-# api_url = 'https://api.linkedin.com/v2/me'
+# html = requests.get("https://www.linkedin.com/oauth/v2/authorization",
+#                     params = auth_params)
 
-# headers = {
-#     'Authorization': f'Bearer {APPLICATON_SECRET}',
-#     'Connection': 'Keep-Alive',
-#     'Content-Type': 'application/json',
-# }
+# print(html.url)
 
-# response = requests.get(api_url, headers=headers)
-# if response.status_code == 200:
-#     print('Access token is valid!')
-# else:
-#     print('Access token is invalid or has expired.')
+authorization_base_url = "https://www.linkedin.com/oauth/v2/authorization"
+scope = ["r_liteprofile","r_emailaddress","w_member_social"]
+REDIRECT_URI = "http://127.0.0.1"
+linkedin = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=scope)
+
+# Redirect user to LinkedIn for authorization
+authorization_url, state = linkedin.authorization_url(authorization_base_url)
+print(f"Please go here and authorize: {authorization_url}")
