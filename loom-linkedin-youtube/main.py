@@ -8,9 +8,6 @@ import random
 
 load_dotenv()
 
-# os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-
-
 REDIRECT_URI = 'https://www.linkedin.com/developers/tools/oauth/redirect'
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
@@ -21,7 +18,7 @@ ACCESS_TOKEN = os.getenv('ACCESS_TOKEN') # generated from linkedin developer too
 # headers = {"Authorization": f"Bearer {ACCESS_TOKEN}",
 #         "Content-Type": "application/json"}
 
-# response_user_info = requests.get('https://api.linkedin.com/v2/me',headers=headers)
+# response_user_info = requests.get('https://api.linkedin.com/v2/userinfo',headers=headers)
 # print(response_user_info.status_code)
 # print(response_user_info.json())
 
