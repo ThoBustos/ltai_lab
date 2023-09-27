@@ -1,10 +1,7 @@
 # from linkedin import linkedin
 import os
-from requests_oauthlib import OAuth2Session
 from dotenv import load_dotenv
 import requests
-import string
-import random
 
 load_dotenv()
 
