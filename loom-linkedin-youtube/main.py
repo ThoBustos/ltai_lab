@@ -8,35 +8,42 @@ import random
 
 load_dotenv()
 
-REDIRECT_URI = 'http://localhost:8000'
-REDIRECT_URI_ENCODED = 'http%3A%2F%2Flocalhost%3A8000'
+# os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+
+REDIRECT_URI = 'https://www.linkedin.com/developers/tools/oauth/redirect'
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
-
-# Generate a random string to protect against cross-site request forgery
-letters = string.ascii_lowercase
-CSRF_TOKEN = ''.join(random.choice(letters) for i in range(24))
-
-AUTH_CODE =''
-ACCESS_TOKEN_URL = 'https://www.linkedin.com/oauth/v2/accessToken'
-
-# auth_params = {'response_type': 'code',
-#                'client_id': CLIENT_ID,
-#                'redirect_uri': REDIRECT_URI_ENCODED,
-#                'state': CSRF_TOKEN,
-#                'scope': ['w_member_social']} #r_liteprofile,r_emailaddress,
+ACCESS_TOKEN = os.getenv('ACCESS_TOKEN') # generated from linkedin developer tools
 
 
-# html = requests.get("https://www.linkedin.com/oauth/v2/authorization",
-#                     params = auth_params)
+# user info
+# headers = {"Authorization": f"Bearer {ACCESS_TOKEN}",
+#         "Content-Type": "application/json"}
 
-# print(html.url)
+# response_user_info = requests.get('https://api.linkedin.com/v2/me',headers=headers)
+# print(response_user_info.status_code)
+# print(response_user_info.json())
 
-authorization_base_url = "https://www.linkedin.com/oauth/v2/authorization"
-scope = ["r_liteprofile","r_emailaddress","w_member_social"]
-REDIRECT_URI = "http://127.0.0.1"
-linkedin = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=scope)
+# post linkedin
+headers = {"Authorization": f"Bearer {ACCESS_TOKEN}",
+        "X-Restli-Protocol-Version": "2.0.0",
+        "Content-Type": "application/json"}
 
-# Redirect user to LinkedIn for authorization
-authorization_url, state = linkedin.authorization_url(authorization_base_url)
-print(f"Please go here and authorize: {authorization_url}")
+body = {
+    "author": "urn:li:person:X04cifWENE",
+    "lifecycleState": "PUBLISHED",
+    "specificContent": {
+        "com.linkedin.ugc.ShareContent": {
+            "shareCommentary": {
+                "text": "Hello World! This is my first Share on LinkedIn (with api)!"
+            },
+            "shareMediaCategory": "NONE"
+        }
+    },
+    "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"}
+}
+  
+response_post = requests.post('https://api.linkedin.com/v2/ugcPosts',headers=headers, json=body)
+print(response_post.status_code)
+print(response_post.json())
